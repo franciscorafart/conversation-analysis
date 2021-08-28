@@ -1,7 +1,8 @@
 import os
 import json
-from analysis import print_convo_data
+from analysis import Conversation
 import argparse
+from dates import date_from_args_string
 
 # Arguments
 parser = argparse.ArgumentParser(description='Process some integers.')
@@ -24,11 +25,14 @@ for f in os.listdir('./'):
     else:
         continue
 
+conversations = []
 for fd in file_data:
-    print_convo_data(fd) # TODO: Change to process and separate print portion
+    conversations.append(Conversation(fd)) # TODO: Change to process and separate print portion
 
+for c in conversations:
+    starts_after = date_from_args_string(args.starts_after[0]) if args.starts_after else None
+    query = args.query[0] if args.query else None
+    similar = args.similar[0] if args.similar else None
 
-# import datetime
-# dt_string = "2020-12-18 3:11:09" 
-# format = "%Y-%m-%d %H:%M:%S"
-# dt_object = datetime.datetime.strptime(dt_string, format)
+    c.print_convo_data(starts_after, query, similar)
+
