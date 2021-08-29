@@ -86,7 +86,6 @@ class Conversation:
     def start_time(self):
         return self.start_time
 
-
     def random_snippet(self, speakers):
         names = [name for name, s in speakers.items() if not s['facilitator']]
         random_name = names[random.randint(0, len(names)-1)]
