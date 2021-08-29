@@ -2,6 +2,7 @@
 import random
 import statistics
 from dates import date_from_string
+from fuzzysearch import find_near_matches
 
 class Conversation:
     def __init__(self, conversation_file_data):
@@ -47,45 +48,10 @@ class Conversation:
 
         return res
 
-    
-    def print_convo_data(
-        self, 
-        starts_after=None,
-        query=None,
-        similar=None,
-    ):
-        if not starts_after or self.start_time > starts_after:
-            speakers = self.data
-
-            # evaluate query and similar here
-            if query:
-                query_cordinates = self.exact_comparator(query, speakers) if query else []
-
-            print('query_cordinates', query_cordinates)
-
-            print("============================================================")
-            print(self.title)
-            print("============================================================")
-
-            for name, data in speakers.items():
-                print(name)
-                print('Num Words Spoken:', data['num_words'])
-                print('Duration: ', int(data['duration']))
-                print()
-
-            print('Example Snippet')
-            if query:
-                print('query snippet')
-            elif similar:
-                print('similar snippet')
-            else: 
-                print(self.random_snippet(speakers), '...') # Random Snippets from non facilitators
-
-            print('Health: ', self.health_analysis(speakers), '/ 3')
-
     def start_time(self):
         return self.start_time
 
+    # Random Snippets from non-facilitators
     def random_snippet(self, speakers):
         names = [name for name, s in speakers.items() if not s['facilitator']]
         random_name = names[random.randint(0, len(names)-1)]
@@ -108,16 +74,31 @@ class Conversation:
 
         return balanced + calmed + fluent
 
-    def exact_comparator(self, q, speakers):
+    def exact_comparator(self, q):
         query_coordinates = []
 
-        for name, data in speakers.items():
+        for name, data in self.data.items():
             for index_of_phrase, phrase in enumerate(data['phrases']):
                 index_of_q = phrase.find(q)
                 if index_of_q >= 0:
                     query_coordinates.append((name, index_of_phrase))
 
-        return query_coordinates
+        self.query_coordinates = query_coordinates
+
+        return True if query_coordinates else False
+
+    def fuzzy_comparator(self, q):
+        query_coordinates = []
+
+        for name, data in self.data.items():
+            for index_of_phrase, phrase in enumerate(data['phrases']):
+                near_matches = find_near_matches(q, phrase, max_l_dist=4)
+                if near_matches:
+                    query_coordinates.append((name, index_of_phrase))
+
+        self.query_coordinates = query_coordinates
+
+        return True if query_coordinates else False
 
     # TODO: Implement similar with Fuzzy search library 
 
