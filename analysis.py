@@ -8,6 +8,7 @@ class Conversation:
         self.title = conversation_file_data['title']
         self.data = self.speaker_data(conversation_file_data['snippets'])
         self.start_time = date_from_string(conversation_file_data['start_time'])
+        self.query_coordinates = []
 
     def speaker_data(self, snippets):
         res = {}
@@ -31,7 +32,9 @@ class Conversation:
             
             snippet_duration = s['audio_end_offset'] - s['audio_start_offset']
             facilitator = s['is_facilitator']
+            # index_in_convo = s['index_in_conversation']
             words = s['words']
+
             text = ' '.join([w[0] for w in words])
             speaking_duration = sum([w[2] - w[1] for w in words])
 
@@ -43,6 +46,7 @@ class Conversation:
             res[speaker_name]['facilitator'] = facilitator
 
         return res
+
     
     def print_convo_data(
         self, 
@@ -51,11 +55,18 @@ class Conversation:
         similar=None,
     ):
         if not starts_after or self.start_time > starts_after:
+            speakers = self.data
+
+            # evaluate query and similar here
+            if query:
+                query_cordinates = self.exact_comparator(query, speakers) if query else []
+
+            print('query_cordinates', query_cordinates)
+
             print("============================================================")
             print(self.title)
             print("============================================================")
 
-            speakers = self.data
             for name, data in speakers.items():
                 print(name)
                 print('Num Words Spoken:', data['num_words'])
@@ -63,9 +74,18 @@ class Conversation:
                 print()
 
             print('Example Snippet')
-            print(self.random_snippet(speakers), '...') # Random Snippets from non facilitators
+            if query:
+                print('query snippet')
+            elif similar:
+                print('similar snippet')
+            else: 
+                print(self.random_snippet(speakers), '...') # Random Snippets from non facilitators
 
             print('Health: ', self.health_analysis(speakers), '/ 3')
+
+    def start_time(self):
+        return self.start_time
+
 
     def random_snippet(self, speakers):
         names = [name for name, s in speakers.items() if not s['facilitator']]
@@ -79,38 +99,52 @@ class Conversation:
 
         return phrases_for_snippet[random.randint(0, len(phrases_for_snippet)-1)]
 
-    # def query_snippet(self, speakers):
-    #     pass
 
     def health_analysis(self, speakers):
         speaker_data = [s for s in speakers.values() if not s['facilitator']]  # Do not consider moderator
         
-        balanced = balanced_conversation([s['duration'] for s in speaker_data])
-        calmed = calmed_conversation(speaker_data)
-        fluent = fluent_conversation(speakers.values())
+        balanced = _balanced_conversation([s['duration'] for s in speaker_data])
+        calmed = _calmed_conversation(speaker_data)
+        fluent = _fluent_conversation(speakers.values())
 
         return balanced + calmed + fluent
 
+    def exact_comparator(self, q, speakers):
+        query_coordinates = []
+
+        for name, data in speakers.items():
+            for index_of_phrase, phrase in enumerate(data['phrases']):
+                index_of_q = phrase.find(q)
+                if index_of_q >= 0:
+                    query_coordinates.append((name, index_of_phrase))
+
+        return query_coordinates
+
+    # TODO: Implement similar with Fuzzy search library 
+
 # Evaluate the spread of speaking durations by calculating coefficient of variation
 # Return 1 if the conversation is balanced, 0 if not
-def balanced_conversation(durations):
+def _balanced_conversation(durations):
     coef_variation = statistics.stdev(durations) / statistics.mean(durations)
     return 1 if coef_variation < 0.6 else 0
 
 # Evaluate the percentage of time speaking words vs. the time taken to speak
 # I'm arbitrarily assigning a lower percentage as a more calm delivery
-def calmed_conversation(speaker_data):
+def _calmed_conversation(speaker_data):
     delivery_speed = statistics.mean([s['speaking_duration'] / s['duration'] for s in speaker_data])
 
     return 1 if delivery_speed < 0.75 else 0
 
 # How much time facilitator takes vs total amount => More facilitator talks, less fluent conversation
 # Threshold at 30%
-def fluent_conversation(speaker_data):
+def _fluent_conversation(speaker_data):
     total_duration = sum([sd['duration'] for sd in speaker_data])
     facilitator_duration = [sd['duration'] for sd in speaker_data if sd['facilitator']][0]
 
     facilitator_percentage = facilitator_duration / total_duration
 
     return 1 if facilitator_percentage < 0.3 else 0
+
+
+
 

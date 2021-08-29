@@ -9,13 +9,15 @@ parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--starts-after', type=str, nargs=1,
                     help='Starting date of conversation')
 parser.add_argument('--query', type=str, nargs=1,
-                    help='Starting date of conversation')
+                    help='Exact query')
 parser.add_argument('--similar', type=str, nargs=1,
-                    help='Starting date of conversation')
+                    help='Similar query')
 
 args = parser.parse_args()
+starts_after = date_from_args_string(args.starts_after[0]) if args.starts_after else None
+query = args.query[0] if args.query else None
+similar = args.similar[0] if args.similar else None
 
-print('Arguments', args)
 # Import, parse JSON, and store in working memory
 file_data = []
 for f in os.listdir('./'):
@@ -25,14 +27,11 @@ for f in os.listdir('./'):
     else:
         continue
 
+# Class instances from file data
 conversations = []
 for fd in file_data:
-    conversations.append(Conversation(fd)) # TODO: Change to process and separate print portion
+    conversations.append(Conversation(fd))
 
 for c in conversations:
-    starts_after = date_from_args_string(args.starts_after[0]) if args.starts_after else None
-    query = args.query[0] if args.query else None
-    similar = args.similar[0] if args.similar else None
-
     c.print_convo_data(starts_after, query, similar)
 
