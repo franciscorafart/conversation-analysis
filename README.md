@@ -4,7 +4,7 @@
 2. In the extracted folder directory, activate the venv with `$ source bin/activate`
 3. Install the packages with `$ pip install`
 4. Run `$ python3 conversation_analyzer.py` with any arguments you want.
-5. Run unit tests with `$ pytest test_analysis.py`
+5. Run unit tests with `$ pytest tests`
 6. Deactivate the environment when finished `$ deactivate`
 
 ## 2. How you approached the problem

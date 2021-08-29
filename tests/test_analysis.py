@@ -1,6 +1,7 @@
 import json
 import pytest
-from analysis import Conversation
+
+from conversation import Conversation
 
 file_data = json.load(open('./332.json', 'r'))
 

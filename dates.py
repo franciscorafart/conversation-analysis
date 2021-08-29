@@ -1,5 +1,5 @@
 import datetime
-# dt_string = "2020-12-18 3:11:09" 
+
 full_format = "%Y-%m-%dT%H:%M:%S"
 args_format = "%Y-%m-%d"
 
