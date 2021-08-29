@@ -100,7 +100,6 @@ class Conversation:
 
         return True if query_coordinates else False
 
-    # TODO: Implement similar with Fuzzy search library 
 
 # Evaluate the spread of speaking durations by calculating coefficient of variation
 # Return 1 if the conversation is balanced, 0 if not
