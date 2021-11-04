@@ -1,7 +1,5 @@
 
 import argparse
-import os
-import json
 from conversation import Conversation
 from dates import date_from_args_string
 from helpers import filter_conversations, import_json_files, print_convo_data 

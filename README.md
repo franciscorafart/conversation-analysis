@@ -1,4 +1,44 @@
-# Analyze conversations in JSON files
+# Project: Analyze conversations in JSON files with Python (Take home assignment)
+
+# Instructions
+You are to write a Python command line program which prints some information about conversations.
+
+For each conversation
+Read in the conversation file and print out the title
+Print a random snippet
+Produce a summary for each Speaker in the conversation with:
+Number of words spoken
+Duration of time spoken
+Print a “health metric” for the conversation. Interpret how you would like— examples might be if everyone speaks for roughly the same amount of time, how often there is silence, speech pace, amount of speech per speaker turn, etc.
+Add at least one unit test
+Take in a parameter --starts-after [date] which is a date string. If this parameter is passed in, return only the conversations that took place after the passed in date.
+Take in a parameter --query [string] which returns only conversations that have the query string mentioned at some point. In addition, instead of a random snippet, return a snippet that contains the query match
+Take in a parameter --similar [string] which, instead of a random snippet, returns the snippet most “similar” to the passed in string. Interpret “similar” however you would like. You can assume --query and --similar will be used independently.
+
+An example output might look like:
+============================================================ 
+Resistance and Resiliency within the Asian American Community ============================================================
+T. Marie 
+Num words spoken: xxx 
+Duration: yyy 
+
+Rob 
+Num words spoken: xxx 
+Duration: yyy 
+... [continued on next page]
+
+Example snippet 
+I almost hesitate to say this because I don't want this to come across as insensitive, but truthfully I'm not scared because I don't want to live my life in fear of this... 
+
+Health metrics 
+[something]: [grade]
+
+============================================================ 
+East Side Public Safety Forum - Group 3
+============================================================
+...
+
+# Solution
 
 ## 1. Installation/running instructions
 
@@ -16,7 +56,7 @@ Example:
 5. Run unit tests with `$ pytest tests`
 6. Deactivate the environment when finished `$ deactivate`
 
-## 2. How you approached the problem
+## 2. How I approached the problem
 My approach was to get the basic information parsed and printed at the beggining so I had results to show. After I figured that out I worked on implementing the more coplex fiunctionality such as date filtering, query, similar, and the snippet printing (random and query-based).
 
 Explanation of health score:
@@ -28,17 +68,17 @@ For the Conversation Healh Score, I used 3 indicators that add up to a score:
 
 For the implementation of `similar`, I ended up using an external library (fuzzysearch), as implementing an efficient algorithm for this seemed very out of scope.
 
-## 3. Any problems you ran into
+## 3. Problems I ran into
 Finding a way of implementing the 'similar' was challengingg. I thought of a Trie structure to search for strings at the beginning, but then I realized it doesn't apply well because the text is not really a dictionary. I researched and found the fuzzy search library, that works in a reasonably fast fashion.
 
 I also had some issues with getting pytest to find the external libraries I used. I had to uninstall the packages from my global env and reinstall them on venv.
 
-## 4. Any optimizations or changes you’d make given more time
+## 4. Optimizations or changes I would make given more time
 If I had more time I would do a better job separating the class logic from the helper code, which is a bit tightly-coupled. The helpef functions should be non-specific to the particular implementation of the Conversation class, so that they can be reused.
 
 I would also spend some more time researching the fuzzysearch library to make sure I'm using the methods in the most performant way. Also, I would try to implement the algorithm from scratch, to understand the nature of the problem with more depth.
 
-## 5. A rough breakdown of how you spent your time
+## 5. A rough breakdown of how I spent my time
 
 - Researching libraries and possible approaches to solve problems: 1 hour
 - Parsing Logic: 40 minutes
