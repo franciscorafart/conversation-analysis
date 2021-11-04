@@ -1,12 +1,13 @@
 
 import argparse
-
+import os
+import json
 from conversation import Conversation
 from dates import date_from_args_string
 from helpers import filter_conversations, import_json_files, print_convo_data 
 
-file_data = import_json_files('./')
-
+file_data = import_json_files('conversations/')
+    
 # Argument parsing
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('--starts-after', type=str, nargs=1,

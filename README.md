@@ -1,3 +1,5 @@
+# Analyze conversations in JSON files
+
 ## 1. Installation/running instructions
 
 1. Extract the files 

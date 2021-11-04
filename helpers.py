@@ -6,7 +6,7 @@ def import_json_files(path):
 
     for f in os.listdir(path):
         if f.endswith('.json'):
-            data = json.load(open(f, 'r'))
+            data = json.load(open(path+f, 'r'))
             file_data.append(data)
         else:
             continue
